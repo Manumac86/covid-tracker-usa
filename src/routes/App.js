@@ -1,145 +1,108 @@
-/**
- * Dependencies
- */
+import React, { useEffect } from 'react';
 import moment from 'moment';
-import { useEffect } from 'react';
-import { connect } from 'react-redux';
-/**
- * Components
- */
-import Chart from '../containers/Chart'
-import DataTable from '../components/DateTable';
-import Dropdown from '../containers/Dropdown';
-/**
- * Api Methods
- */
+import { useDispatch, useSelector } from 'react-redux';
+
+// Actions
 import {
-  getStatesDataByDate
-} from '../services/api';
-/**
- * Actions
- */
-import {
-  setStatesData,
-  setIsLoading,
-  setClickedDate,
+  addClickAction,
+  filterData,
+  getChartData,
+  histogramDateClick,
   setFilteredStatesData,
-  setIsTableVisible
-} from '../actions';
-/**
- * Styles
- */
+} from '../actions/chartActions';
+
+// Components
+import Chart from '../components/Chart'
+import DateTable from '../components/DateTable';
+import Dropdown from '../components/Dropdown';
+import Spinner from '../components/Spinner';
+
+// Styles
 import '../assets/css/App.css';
 
 /**
  * The App Component
  *
- * @param {Object} props
  * @return {JSX} 
  */
-const App = (props) => {
-  /**
-   * The props from the State.
-   * 
-   * @property {Moment}    clickedDate            The clicked date in the chart.
-   * @property {Array}     filteredStatesData     The filtered data from states data.
-   * @property {Boolean}   isLoading              Flag to indicate that the App is loading or not.
-   * @property {Boolean}   isTableVisible         Flag to indicate that the DataTable is visible or not.
-   * @property {Array}     statesData             The data for the US states.
-   * @property {Function}  setFilteredStatesData  Action to set the Filtered States Data.
-   * @property {Function}  setIsLoading           Action to set the loading flag.
-   * @property {Function}  setIsTableVisible      Action to set the DataTable visibility flag.
-   * @property {Function}  setStatesData          Action to set the States Data.
-   */
+const App = () => {
   const {
-    clickedDate,
-    filteredStatesData,
-    isLoading,
-    isTableVisible,
-    statesData,
-    setFilteredStatesData,
-    setIsLoading,
-    setIsTableVisible,
-    setStatesData,
-  } = props;
+    loading, 
+    usData, 
+    chartConfig, 
+    clickedDate, 
+    statesData, 
+    filteredStatesData ,
+    filteredData
+  } = useSelector(state => state.chart)
+
+  // To dispatch redux actions.
+  const dispatch = useDispatch();
 
   /**
-   * Use the api methods to get the data from the API.
-   * Handle the Click event for a data point in the chart.
+   * Get the data collection to show in the chart on load.
    */
   useEffect(() => {
-    /**
-     * Get the states data from the API and set it into the state.
-     */
-    getStatesDataByDate()
-    .then(response => {
-      setStatesData(response.data);
-      setIsLoading(false);
-    })
-  }, [setIsLoading, setStatesData]);
+    dispatch(getChartData())
+  }, [dispatch])
 
   /**
-   * Filter the states data with the clicked date in order to show it within the DataTable.
+   * Filter chart data according to the selected period.
+   *
+   * @param {SyntheticEvent} event  The dropdown change event.
    */
+  const handleDropdownChange = (event) => {
+    dispatch(
+      filterData(
+        usData,
+        event.target.value
+      )
+    )
+  }
+
   useEffect(() => {
-    if(statesData.length) {
-      const filteredStatesData = statesData
-        .filter(item => item.date.toString() === clickedDate)
-      setFilteredStatesData(filteredStatesData);
-      setIsLoading(false);
+    const handleHistogramClickData = (event) => {
+      dispatch(
+        histogramDateClick(
+          moment(filteredData.dates[event.point.index], "MM-DD").format("YYYYMMDD")
+        )
+      )
     }
-  }, [statesData, clickedDate, setFilteredStatesData, setIsLoading, setIsTableVisible]);
-  /**
-   * Set the DataTable to visible when a date is clicked.
-   */
+    dispatch(addClickAction(handleHistogramClickData))
+  }, [dispatch, filteredData.dates, statesData, usData])
+
   useEffect(() => {
-    if(clickedDate.length) {
-      setIsTableVisible(true);
-    }
-  }, [setIsTableVisible, clickedDate])
+    const filteredStatesData = statesData.filter(item => item.date.toString() === clickedDate);
+    dispatch(
+      setFilteredStatesData(
+        filteredStatesData
+      )
+    )
+  }, [clickedDate, dispatch, statesData])
   
   return (
     <div className="App">
-      <h1>Covid-19 USA Tracker</h1>
-      <Dropdown />
-      <Chart />
-      {
-        !isLoading && isTableVisible && 
-        <DataTable 
-          data={filteredStatesData} 
-          date={moment(clickedDate, "YYYYMMDD").format("YYYY-MM-DD")}
-        />
+      <h1 className="App__Title">Covid-19 USA Tracker</h1>
+      <a href="https://api.covidtracking.com">Data source: covidtracking.com</a>
+      <Dropdown handleChange={handleDropdownChange} />
+      { 
+        !loading ?
+          <Chart chartConfig={chartConfig} />
+        : <Spinner />
       }
+      {
+        !loading && (filteredStatesData.length > 0) &&
+          <DateTable
+            data={filteredStatesData}
+            date={moment(clickedDate, "YYYYMMDD").format("YYYY-MM-DD")}
+          />
+      }
+      <footer className="App__Footer">
+        <a href="https://github.com/Manumac86/covid-tracker-usa/">Github</a>
+        <a href="https://www.linkedin.com/in/emmartinez-profile/">LinkedIn</a>
+      </footer>
     </div>
   );
 }
 
-/**
- * Map the state to the component props.
- *
- * @param {Object} state  The current state.
- * @return {Object} 
- */
-const mapStateToProps = (state) => {
-  return {
-    clickedDate: state.clickedDate,
-    isLoading: state.isLoading,
-    statesData: state.statesData,
-    filteredStatesData: state.filteredStatesData,
-    isTableVisible: state.isTableVisible,
-  }
-}
-
-/**
- * Map the dispatch actions to component props.
- * @type {Object}
- */
-const mapDispatchToProps = {
-  setStatesData,
-  setIsLoading,
-  setClickedDate,
-  setFilteredStatesData,
-  setIsTableVisible,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;
