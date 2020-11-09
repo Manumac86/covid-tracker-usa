@@ -1,13 +1,16 @@
-const DropdownComponent = () => {
+const DropdownComponent = ({ handleChange }) => {
   return (
     <div className="App-Dropdown">
+      <strong>Filter data: </strong>
       <select
-        name="numberOfDays"
         id="numberOfDays"
+        defaultValue={'all'}
+        name="numberOfDays"
+        onChange={handleChange}
       >
-        <option value="7 days">7 Days</option>
-        <option value="30 days">30 Days</option>
         <option value="all">All</option>
+        <option value="7Days">7 Days</option>
+        <option value="30Days">30 Days</option>
       </select>
     </div>
   );

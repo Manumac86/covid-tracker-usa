@@ -1,58 +1,145 @@
-import { useEffect } from 'react';
+/**
+ * Dependencies
+ */
 import moment from 'moment';
-import ChartComponent from '../components/ChartComponent'
-import Dropdown from '../containers/Dropdown';
-import { getTotalData } from '../services/api';
-
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { setChartData } from '../actions';
-
+/**
+ * Components
+ */
+import Chart from '../containers/Chart'
+import DataTable from '../components/DateTable';
+import Dropdown from '../containers/Dropdown';
+/**
+ * Api Methods
+ */
+import {
+  getStatesDataByDate
+} from '../services/api';
+/**
+ * Actions
+ */
+import {
+  setStatesData,
+  setIsLoading,
+  setClickedDate,
+  setFilteredStatesData,
+  setIsTableVisible
+} from '../actions';
+/**
+ * Styles
+ */
 import '../assets/css/App.css';
 
-function App(props) {
+/**
+ * The App Component
+ *
+ * @param {Object} props
+ * @return {JSX} 
+ */
+const App = (props) => {
   /**
-   * Call the api service to get the data to show in the chart.
+   * The props from the State.
+   * 
+   * @property {Moment}    clickedDate            The clicked date in the chart.
+   * @property {Array}     filteredStatesData     The filtered data from states data.
+   * @property {Boolean}   isLoading              Flag to indicate that the App is loading or not.
+   * @property {Boolean}   isTableVisible         Flag to indicate that the DataTable is visible or not.
+   * @property {Array}     statesData             The data for the US states.
+   * @property {Function}  setFilteredStatesData  Action to set the Filtered States Data.
+   * @property {Function}  setIsLoading           Action to set the loading flag.
+   * @property {Function}  setIsTableVisible      Action to set the DataTable visibility flag.
+   * @property {Function}  setStatesData          Action to set the States Data.
+   */
+  const {
+    clickedDate,
+    filteredStatesData,
+    isLoading,
+    isTableVisible,
+    statesData,
+    setFilteredStatesData,
+    setIsLoading,
+    setIsTableVisible,
+    setStatesData,
+  } = props;
+
+  /**
+   * Use the api methods to get the data from the API.
+   * Handle the Click event for a data point in the chart.
    */
   useEffect(() => {
-    getTotalData()
-    .then((response) => {
-      const orderedData = response.data.reverse();
-      const dates = [];
-      const deaths = [];
-      const confirmed = [];
-
-      orderedData.forEach(item => {
-        dates.push(moment(item.date, "YYYYMMDD").format("MM-DD"));
-        deaths.push(item.death);
-        confirmed.push(item.positive);
-      });
-      props.setChartData({
-        xAxis: {
-          categories: dates,
-        },
-        series: [{
-          name: 'Confirmed',
-          data: confirmed
-        }, {
-            name: 'Deaths',
-            data: deaths
-        }],
-      })
-      console.log(orderedData);
+    /**
+     * Get the states data from the API and set it into the state.
+     */
+    getStatesDataByDate()
+    .then(response => {
+      setStatesData(response.data);
+      setIsLoading(false);
     })
-  }, [props]);
+  }, [setIsLoading, setStatesData]);
 
+  /**
+   * Filter the states data with the clicked date in order to show it within the DataTable.
+   */
+  useEffect(() => {
+    if(statesData.length) {
+      const filteredStatesData = statesData
+        .filter(item => item.date.toString() === clickedDate)
+      setFilteredStatesData(filteredStatesData);
+      setIsLoading(false);
+    }
+  }, [statesData, clickedDate, setFilteredStatesData, setIsLoading, setIsTableVisible]);
+  /**
+   * Set the DataTable to visible when a date is clicked.
+   */
+  useEffect(() => {
+    if(clickedDate.length) {
+      setIsTableVisible(true);
+    }
+  }, [setIsTableVisible, clickedDate])
+  
   return (
     <div className="App">
       <h1>Covid-19 USA Tracker</h1>
       <Dropdown />
-      <ChartComponent />
+      <Chart />
+      {
+        !isLoading && isTableVisible && 
+        <DataTable 
+          data={filteredStatesData} 
+          date={moment(clickedDate, "YYYYMMDD").format("YYYY-MM-DD")}
+        />
+      }
     </div>
   );
 }
 
-const mapDispatchToProps = {
-  setChartData,
+/**
+ * Map the state to the component props.
+ *
+ * @param {Object} state  The current state.
+ * @return {Object} 
+ */
+const mapStateToProps = (state) => {
+  return {
+    clickedDate: state.clickedDate,
+    isLoading: state.isLoading,
+    statesData: state.statesData,
+    filteredStatesData: state.filteredStatesData,
+    isTableVisible: state.isTableVisible,
+  }
 }
 
-export default connect(null, mapDispatchToProps)(App);
+/**
+ * Map the dispatch actions to component props.
+ * @type {Object}
+ */
+const mapDispatchToProps = {
+  setStatesData,
+  setIsLoading,
+  setClickedDate,
+  setFilteredStatesData,
+  setIsTableVisible,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

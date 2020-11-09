@@ -1,0 +1,13 @@
+.tableHeader {
+  border-bottom: 2px solid gray;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(100px, 1fr));
+  padding: 5px 0;
+}
+
+.tableRow {
+  border-bottom: 1px solid gray;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(100px, 1fr));
+  padding: 5px 0;
+}
