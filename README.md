@@ -2,6 +2,8 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Demo
+You can see a production online version on [boostup-covid-tracker](https://boostup-covid-tracker.web.app/)
 ## Covid API
 The project uses the data provided by https://covidtracking.com/
 
