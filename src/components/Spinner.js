@@ -1,5 +1,14 @@
+/**
+ * Styles
+ */
 import '../assets/css/Spinner.css'
 
+/**
+ * The Spinner component.
+ * Shows a spinner for loading states.
+ *
+ * @return {JSX} 
+ */
 const Spinner = () => {
   return (
     <div className="Spinner">

@@ -1,11 +1,30 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+/**
+ * Dependencies
+ */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import store from './Store';
-import App from './routes/App';
 import reportWebVitals from './reportWebVitals';
 
+/**
+ * The Redux Store.
+ */
+import store from './Store';
+
+/**
+ * Components
+ */
+import App from './routes/App';
+
+/**
+ * Styles
+ */
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+/**
+ * Renders the App.
+ */
 ReactDOM.render(
   <Provider store={store}>
     <React.StrictMode>

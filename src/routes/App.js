@@ -1,8 +1,13 @@
+/**
+ * Dependencies
+ */
 import React, { useEffect } from 'react';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 
-// Actions
+/**
+ * Actions
+ */
 import {
   addClickAction,
   filterData,
@@ -11,13 +16,17 @@ import {
   setFilteredStatesData,
 } from '../actions/chartActions';
 
-// Components
+/**
+ * Components.
+ */
 import Chart from '../components/Chart'
 import DateTable from '../components/DateTable';
 import Dropdown from '../components/Dropdown';
 import Spinner from '../components/Spinner';
 
-// Styles
+/**
+ * Styles.
+ */
 import '../assets/css/App.css';
 
 /**
@@ -36,11 +45,15 @@ const App = () => {
     filteredData
   } = useSelector(state => state.chart)
 
-  // To dispatch redux actions.
+  /**
+   * To dispatch redux actions.
+   * 
+   * @type {Function}
+   */
   const dispatch = useDispatch();
 
   /**
-   * Get the data collection to show in the chart on load.
+   * Gets the data collection to show in the chart on load.
    */
   useEffect(() => {
     dispatch(getChartData())
@@ -60,7 +73,15 @@ const App = () => {
     )
   }
 
+  /**
+   * Ads the action to the chart config for when a date point is clicked.
+   */
   useEffect(() => {
+    /**
+     * Dispatch the action for when a date point of the chart is cliked.
+     *
+     * @param {SyntheticEvent} event
+     */
     const handleHistogramClickData = (event) => {
       dispatch(
         histogramDateClick(
@@ -71,6 +92,10 @@ const App = () => {
     dispatch(addClickAction(handleHistogramClickData))
   }, [dispatch, filteredData.dates, statesData, usData])
 
+  /**
+   * Filter the states data according to the clicked date point.
+   * Sets the filtered states data.
+   */
   useEffect(() => {
     const filteredStatesData = statesData.filter(item => item.date.toString() === clickedDate);
     dispatch(

@@ -1,4 +1,4 @@
-.App-Dropdown {
+.Dropdown {
     align-items: center;
     color: gray;
     display: flex;
@@ -6,7 +6,7 @@
     margin: 24px 0;
 }
 
-.App-Dropdown__Title {
+.Dropdown__Title {
     font-size: 1em;
     line-height: 2em;
     padding: 0 15px;

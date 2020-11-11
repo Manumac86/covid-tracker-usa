@@ -1,5 +1,17 @@
+/**
+ * Styles
+ */
 import '../assets/css/DateTable.css';
 
+/**
+ * The DateTable component.
+ * Shows the states data for a selected date.
+ *
+ * @param {Array}  data  The data to show in the table.
+ * @param {String} date  The selected date.
+ * 
+ * @return {JSX} 
+ */
 const DateTable = ({ data, date }) => {
   return (
     <div>

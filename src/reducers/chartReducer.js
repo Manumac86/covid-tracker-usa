@@ -1,3 +1,8 @@
+/**
+ * The initial state for the App.
+ * 
+ * @type {Object}
+ */
 const initialState = {
   loading: false,
   usData: [],
@@ -45,6 +50,14 @@ const initialState = {
   }
 }
 
+/**
+ * The reducer for the Chart state.
+ *
+ * @param {Object} [state=initialState]  The initial state.
+ * @param {Object} action                The action to execute.
+ * 
+ * @return {Object} 
+ */
 const chartReducer = (state = initialState, action) => {
   const { type, payload } = action;
 

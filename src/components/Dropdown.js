@@ -2,8 +2,8 @@ import '../assets/css/Dropdown.css';
 
 const Dropdown = ({ handleChange }) => {
   return (
-    <div className="App-Dropdown">
-      <h3 className="App-Dropdown__Title">Filter data</h3>
+    <div className="Dropdown">
+      <h3 className="Dropdown__Title">Filter data</h3>
       <select
         className="btn btn-primary"
         id="numberOfDays"
